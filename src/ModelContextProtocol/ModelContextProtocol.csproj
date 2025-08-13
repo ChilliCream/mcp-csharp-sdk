@@ -4,7 +4,8 @@
     <TargetFrameworks>net10.0;net9.0;net8.0;netstandard2.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
-    <PackageId>ModelContextProtocol</PackageId>
+    <PackageId>ChilliCream.ModelContextProtocol</PackageId>
+    <AssemblyName>ChilliCream.ModelContextProtocol</AssemblyName>
     <Description>.NET SDK for the Model Context Protocol (MCP) with hosting and dependency injection extensions.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
