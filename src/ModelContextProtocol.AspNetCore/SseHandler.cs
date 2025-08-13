@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace ModelContextProtocol.AspNetCore;
 
-internal sealed class SseHandler(
+public sealed class SseHandler(
     IOptions<McpServerOptions> mcpServerOptionsSnapshot,
     IOptionsFactory<McpServerOptions> mcpServerOptionsFactory,
     IOptions<HttpServerTransportOptions> httpMcpServerOptions,
