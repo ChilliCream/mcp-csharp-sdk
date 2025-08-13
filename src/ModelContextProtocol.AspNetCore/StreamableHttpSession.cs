@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace ModelContextProtocol.AspNetCore;
 
-internal sealed class StreamableHttpSession(
+public sealed class StreamableHttpSession(
     string sessionId,
     StreamableHttpServerTransport transport,
     McpServer server,

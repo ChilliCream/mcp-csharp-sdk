@@ -6,6 +6,7 @@ root = true
 csharp_style_namespace_declarations=file_scoped:warning
 
 # Compiler
+dotnet_diagnostic.CS1591.severity = none            # CS1591: Missing XML comment for publicly visible type or member
 dotnet_diagnostic.CS1998.severity = suggestion      # CS1998: Missing awaits
 
 # Code Analysis
