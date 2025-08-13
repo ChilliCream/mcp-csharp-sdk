@@ -1,0 +1,73 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - '0.*.*'
+
+env:
+  ARTIFACTS_PATH: 'artifacts/packages'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: global.json
+        
+    - name: Extract version from tag
+      id: get_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        # Extract numeric version (e.g., "0.1.0" from "0.1.0-preview")
+        NUMERIC_VERSION=$(echo $VERSION | sed 's/-.*$//')
+        # Ensure we have 4 parts for AssemblyVersion (add .0 if needed)
+        ASSEMBLY_VERSION=$(echo $NUMERIC_VERSION | awk -F. '{printf "%s.%s.%s.%s", $1, $2, $3, ($4 != "" ? $4 : "0")}')
+        
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "NUMERIC_VERSION=$NUMERIC_VERSION" >> $GITHUB_OUTPUT
+        echo "ASSEMBLY_VERSION=$ASSEMBLY_VERSION" >> $GITHUB_OUTPUT
+        echo "Full version: $VERSION"
+        echo "Numeric version: $NUMERIC_VERSION"
+        echo "Assembly version: $ASSEMBLY_VERSION"
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build solution
+      run: |
+        dotnet build \
+          --configuration Release \
+          --no-restore \
+          -p:Version=${{ steps.get_version.outputs.VERSION }} \
+          -p:AssemblyVersion=${{ steps.get_version.outputs.ASSEMBLY_VERSION }} \
+          -p:FileVersion=${{ steps.get_version.outputs.NUMERIC_VERSION }} \
+          -p:InformationalVersion=${{ steps.get_version.outputs.VERSION }}
+      
+    - name: Pack NuGet package
+      run: |
+        dotnet pack \
+          --configuration Release \
+          --no-build \
+          --output ${{ env.ARTIFACTS_PATH }} \
+          -p:PackageVersion=${{ steps.get_version.outputs.VERSION }} \
+          -p:Version=${{ steps.get_version.outputs.VERSION }}
+          
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: ${{ env.ARTIFACTS_PATH }}/*.nupkg
+        
+    - name: Publish to NuGet
+      run: |
+        dotnet nuget push "${{ env.ARTIFACTS_PATH }}/*.nupkg" \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate
