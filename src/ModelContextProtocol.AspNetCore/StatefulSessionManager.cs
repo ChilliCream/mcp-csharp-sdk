@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace ModelContextProtocol.AspNetCore;
 
-internal sealed partial class StatefulSessionManager(
+public sealed partial class StatefulSessionManager(
     IOptions<HttpServerTransportOptions> httpServerTransportOptions,
     ILogger<StatefulSessionManager> logger)
 {
